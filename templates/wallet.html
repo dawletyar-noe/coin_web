@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrap section">
+
+  <div class="card" style="max-width:480px; margin-bottom:20px;">
+    <h2 class="form-title">Hisobni to'ldirish</h2>
+    <p class="form-sub">Joriy balans: <strong style="color:var(--gold);">🪙 {{ current_user.coins }}</strong></p>
+
+    <div class="panel-block" style="background:var(--panel-alt); margin-bottom:18px;">
+      <h3 style="margin-bottom:8px;">To'lov ma'lumoti</h3>
+      <p style="font-size:13.5px; color:var(--muted); margin:0;">
+        Quyidagi kartaga summani o'tkazing, so'ng pastdagi formada miqdorni kiriting.
+        Admin tasdiqlagach coinlar hisobingizga tushadi.
+      </p>
+      <p style="font-family:'Space Grotesk'; font-weight:700; font-size:16px; margin:10px 0 0;">
+        {{ PAYMENT_CARD_NUMBER }} — {{ PAYMENT_CARD_OWNER }}
+      </p>
+    </div>
+
+    <form method="POST">
+      <div class="field">
+        <label>To'ldirmoqchi bo'lgan summa (so'm)</label>
+        <input type="number" name="amount" min="1000" step="1000" required placeholder="Masalan: 50000">
+      </div>
+      <p style="font-size:12px; color:var(--muted); margin:-8px 0 16px;">
+        1 coin = {{ COIN_RATE }} so'm
+      </p>
+      <button type="submit" class="btn btn-gold btn-block">So'rov yuborish</button>
+    </form>
+  </div>
+
+  <div class="panel-block">
+    <h3>So'rovlar tarixi</h3>
+    {% if topups %}
+    <table class="table">
+      <tr><th>Sana</th><th>Summa</th><th>Coin</th><th>Holat</th></tr>
+      {% for t in topups %}
+      <tr>
+        <td>{{ t.created_at[:16].replace('T',' ') }}</td>
+        <td>{{ "{:,}".format(t.amount_uzs).replace(',', ' ') }} so'm</td>
+        <td>🪙 {{ t.coins }}</td>
+        <td><span class="badge {{ t.status }}">{{ t.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p class="empty-note">Hali so'rovlar yo'q.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

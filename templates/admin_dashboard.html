@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrap section">
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 class="section-title" style="margin:0;">📊 Admin panel</h2>
+    <a href="{{ url_for('admin_logout') }}" class="btn btn-ghost btn-small">Chiqish</a>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Jami tushum</div>
+      <div class="stat-value gold">{{ "{:,}".format(stats.total_revenue).replace(',', ' ') }} so'm</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Foydalanuvchilar</div>
+      <div class="stat-value">{{ stats.total_users }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Jami buyurtmalar</div>
+      <div class="stat-value">{{ stats.total_orders }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Kutilayotgan to'ldirishlar</div>
+      <div class="stat-value">{{ stats.pending_topups_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Kutilayotgan buyurtmalar</div>
+      <div class="stat-value">{{ stats.pending_orders_count }}</div>
+    </div>
+  </div>
+
+  <div class="panel-block">
+    <h3>O'yinlar bo'yicha buyurtmalar</h3>
+    {% if stats.per_game %}
+      {% set max_count = stats.per_game[0].orders_count %}
+      {% for g in stats.per_game %}
+      <div class="bar-row">
+        <div class="bar-label">{{ g.game_title }}</div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (g.orders_count / max_count * 100) if max_count else 0 }}%;"></div></div>
+        <div class="bar-count">{{ g.orders_count }}</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-note">Hali buyurtmalar yo'q.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel-block">
+    <h3>⏳ Kutilayotgan to'ldirish so'rovlari</h3>
+    {% if pending_topups %}
+    <table class="table">
+      <tr><th>#</th><th>Foydalanuvchi</th><th>Summa</th><th>Coin</th><th></th></tr>
+      {% for t in pending_topups %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.username }}</td>
+        <td>{{ "{:,}".format(t.amount_uzs).replace(',', ' ') }} so'm</td>
+        <td>🪙 {{ t.coins }}</td>
+        <td style="display:flex; gap:8px;">
+          <a href="{{ url_for('admin_topup_action', req_id=t.id, action='approve') }}" class="btn btn-emerald btn-small">Tasdiqlash</a>
+          <a href="{{ url_for('admin_topup_action', req_id=t.id, action='reject') }}" class="btn btn-danger btn-small">Rad etish</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p class="empty-note">Kutilayotgan so'rovlar yo'q.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel-block">
+    <h3>⏳ Kutilayotgan buyurtmalar</h3>
+    {% if pending_orders %}
+    <table class="table">
+      <tr><th>#</th><th>Foydalanuvchi</th><th>O'yin</th><th>Paket</th><th>ID</th><th></th></tr>
+      {% for o in pending_orders %}
+      <tr>
+        <td>{{ o.id }}</td>
+        <td>{{ o.username }}</td>
+        <td>{{ o.game_title }}</td>
+        <td>{{ o.package_title }}</td>
+        <td>{{ o.game_account_id }}</td>
+        <td style="display:flex; gap:8px;">
+          <a href="{{ url_for('admin_order_action', order_id=o.id, action='complete') }}" class="btn btn-emerald btn-small">Bajarildi</a>
+          <a href="{{ url_for('admin_order_action', order_id=o.id, action='cancel') }}" class="btn btn-danger btn-small">Bekor qilish</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p class="empty-note">Kutilayotgan buyurtmalar yo'q.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

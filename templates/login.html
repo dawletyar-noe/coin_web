@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrap">
+  <div class="card card-narrow">
+    <h2 class="form-title">Xush kelibsiz</h2>
+    <p class="form-sub">Hisobingizga kiring</p>
+    <form method="POST">
+      <div class="field">
+        <label>Login</label>
+        <input type="text" name="username" required autofocus>
+      </div>
+      <div class="field">
+        <label>Parol</label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-gold btn-block">Kirish</button>
+    </form>
+    <p class="form-foot">Hisobingiz yo'qmi? <a href="{{ url_for('register') }}" style="color:var(--gold);">Ro'yxatdan o'ting</a></p>
+  </div>
+</div>
+{% endblock %}

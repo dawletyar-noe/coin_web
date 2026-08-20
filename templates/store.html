@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="hero">
+  <div class="wrap">
+    <h1>O'yin ichi valyutasi — tez va ishonchli</h1>
+    <p>Hisobingizni to'ldiring, coinlar bilan sevimli o'yiningizga donat qiling. Free Fire, PUBG, Clash of Clans, Standoff 2 va Mobile Legends.</p>
+  </div>
+</div>
+
+<div class="section wrap">
+  <h2 class="section-title">O'yinlar</h2>
+  <div class="game-grid">
+    {% for code, game in GAMES.items() %}
+    <div class="game-card">
+      <div class="top">
+        <div class="game-icon">{{ game.icon }}</div>
+        <div>
+          <div class="game-title">{{ game.title }}</div>
+          <div class="game-sub">{{ game.id_label }}</div>
+        </div>
+      </div>
+      <div class="pkg-list">
+        {% for p in game.packages %}
+        <div class="pkg-row">
+          <div class="pkg-name">{{ p.title }}</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="pkg-price">🪙 {{ p.price // COIN_RATE }}</div>
+            {% if current_user %}
+            <button class="btn btn-ghost btn-small" onclick="openBuy('{{ code }}','{{ p.code }}','{{ game.title }}','{{ p.title }}',{{ p.price // COIN_RATE }},'{{ game.id_label }}')">Sotib olish</button>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if not current_user %}
+  <div class="card" style="margin-top:24px; text-align:center;">
+    <p style="color:var(--muted); margin:0 0 14px;">Sotib olish uchun avval ro'yxatdan o'ting yoki tizimga kiring.</p>
+    <a href="{{ url_for('register') }}" class="btn btn-gold">Ro'yxatdan o'tish</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Sotib olish modali -->
+<div id="buyModal" style="display:none; position:fixed; inset:0; background:rgba(5,7,12,0.7); z-index:60; align-items:center; justify-content:center; padding:20px;">
+  <div class="card" style="max-width:380px; width:100%;">
+    <h3 class="form-title" id="modalGameTitle">Buyurtma</h3>
+    <p class="form-sub" id="modalPkgTitle"></p>
+    <form method="POST" id="buyForm">
+      <div class="field">
+        <label id="modalIdLabel">ID</label>
+        <input type="text" name="account_id" required placeholder="ID raqamingiz">
+      </div>
+      <div class="pkg-row" style="border-top:none; padding-top:0; margin-bottom:16px;">
+        <div class="pkg-name">Jami to'lov</div>
+        <div class="pkg-price" id="modalPrice">🪙 0</div>
+      </div>
+      <button type="submit" class="btn btn-gold btn-block">Tasdiqlash</button>
+      <button type="button" class="btn btn-ghost btn-block" style="margin-top:8px;" onclick="closeBuy()">Bekor qilish</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openBuy(gameCode, pkgCode, gameTitle, pkgTitle, price, idLabel){
+  document.getElementById('buyForm').action = '/buy/' + gameCode + '/' + pkgCode;
+  document.getElementById('modalGameTitle').textContent = gameTitle;
+  document.getElementById('modalPkgTitle').textContent = pkgTitle + " sotib olish";
+  document.getElementById('modalIdLabel').textContent = idLabel;
+  document.getElementById('modalPrice').textContent = '🪙 ' + price;
+  document.getElementById('buyModal').style.display = 'flex';
+}
+function closeBuy(){ document.getElementById('buyModal').style.display = 'none'; }
+</script>
+
+{% endblock %}

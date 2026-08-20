@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrap section">
+  <h2 class="section-title">Buyurtmalarim</h2>
+  <div class="panel-block">
+    {% if orders %}
+    <table class="table">
+      <tr><th>#</th><th>O'yin</th><th>Paket</th><th>ID</th><th>Narx</th><th>Holat</th></tr>
+      {% for o in orders %}
+      <tr>
+        <td>{{ o.id }}</td>
+        <td>{{ o.game_title }}</td>
+        <td>{{ o.package_title }}</td>
+        <td>{{ o.game_account_id }}</td>
+        <td>🪙 {{ o.coins_price }}</td>
+        <td><span class="badge {{ o.status }}">{{ o.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p class="empty-note">Hali buyurtmalar yo'q.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
